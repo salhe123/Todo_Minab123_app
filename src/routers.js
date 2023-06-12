@@ -1,11 +1,25 @@
 import { createRouter,createWebHistory } from "vue-router";
+import UserList from './components/UserList.vue';
+import ShowTask from './components/ShowTask.vue';
 import AddUser from './components/AddUser.vue';
-const routes=[
+const routes = [
     {
-        path:'/AddUser',
-        component:AddUser
+      path: '/',
+      name: 'UserList',
+      component: UserList
     },
-];
+    {
+        path: '/AddUser',
+        name: 'AddUser',
+        component: AddUser
+      },
+    {
+      path: '/ShowTask/:id',
+      name: 'ShowTask',
+      component: ShowTask,
+      props: true
+    }
+  ];
 const router=createRouter(
     {
         history:createWebHistory(),

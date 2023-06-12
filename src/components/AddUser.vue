@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Add User</h2>
-    <form @submit="submitForm">
+    <form @submit="submitForm" class="">
       <div>
         <label for="fname">First Name:</label>
         <input type="text" id="fname" v-model="firstName" />
