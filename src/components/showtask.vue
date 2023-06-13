@@ -1,86 +1,45 @@
 <template>
   <div>
-    <h2 class="text-end">User</h2>
-    <div>
-      <h1 class="text-bold text-black ml-20 pt-10 bg-gray-500">User List</h1>
-      <ul>
-        <li v-for="user in result && result.users.todo" :key="user.id">
-          <h3>{{ user.fname }}</h3>
-          <ul>
-            <li v-for="todo in user.todos" :key="todo.id">
-              {{ todo.title }} - {{ todo.description }}
-            </li>
-          </ul>
-          <button @click="deleteUser(user.id)">Delete</button>
-          <button @click="editUser(user)">Edit</button>
-        </li>
-      </ul>
+    <h1 class="stroke-zinc-600 text-black ml-5 text-lg">User's Todo List</h1>
+    <ul class="ml-5 pt-5" v-if="selectedUser && selectedUser.todos">
+      <li v-for="todo in selectedUser.todos" :key="todo.id">
+        <h2>{{ todo.title }}</h2>
+        <p>{{ todo.description }}</p>
+        <p>Status: {{ todo.completed ? 'Completed' : 'Incomplete' }}</p>
+      </li>
+    </ul>
+    <div v-else>
+      <p>No user selected or user has no todos.</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useQuery, useMutation } from '@vue/apollo-composable';
+import { useQuery } from '@vue/apollo-composable';
+import { computed } from 'vue';
 import { gql } from 'graphql-tag';
+import { useRouter, useRoute } from 'vue-router';
 
-const { result, refetch } = useQuery(gql`
-  qquery GetUsers {
-  users {
-    id
-		email
-		fname
-		created_at
-  }
-  todo{
-    title
-    description
-    description
-  }
-}
-`);
+const route = useRoute();
+const userId = parseInt(route.params.id);
 
-const DELETE_USER = gql`
-  mutation DeleteUser($userId: Int!) {
-    delete_users_by_pk(id: $userId) {
+const { result } = useQuery(gql`
+  query GetUserTodos($userId: Int!) {
+    user(id: $userId) {
       id
+      fname
+      todos {
+        id
+        title
+        description
+        completed
+      }
     }
   }
-`;
-
-
-const { mutate: deleteUser } = useMutation(DELETE_USER, {
-  update(cache, { data: { delete_users_by_pk } }) {
-    cache.modify({
-      fields: {
-        users(existingUsers = [], { readField }) {
-          return existingUsers.filter((user) => user.id !== readField('id', delete_users_by_pk));
-        },
-      },
-    });
-  },
+`, {
+  userId: computed(() => userId.value), // Use userId.value to access the reactive value
 });
 
-const userList = ref([]);
+const selectedUser = computed(() => result.value?.user);
 
-const handleDelete = async (userId) => {
-  try {
-    await deleteUser({ userId });
-    console.log('User deleted:', userId);
-  } catch (error) {
-    console.error('Error deleting user:', error);
-  }
-};
-
-onMounted(async () => {
-  await refetch();
-  if (result.value) {
-    userList.value = result.value.users;
-  }
-});
-
-const editUser = (user) => {
-  // Implement your logic for editing the user here
-  console.log('Editing user:', user);
-};
 </script>

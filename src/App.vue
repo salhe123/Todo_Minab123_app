@@ -1,6 +1,7 @@
 <template>
   <div>
     <UserList />
+    
   </div>
   <footer>
     <div class="bg-neutral-400">
