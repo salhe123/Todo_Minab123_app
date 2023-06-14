@@ -11,12 +11,12 @@
     <h1 class="stroke-zinc-600 text-black ml-5 text-lg">Users</h1>
     <ul class="grid grid-cols-3 gap-1">
       <li class="ml-5 pt-5" v-for="user in result && result.users" :key="user.id"> 
-    <RouterLink :to="{name:'EditUser',params:{id:user.id}}"><button @click="handleEdit(user.id)"> <svg class="w-2 ml-10 pt-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+    <RouterLink :to="{name:'EditUser',params:{id:user.id}}">  <button @click="handleEdit(user.id)"> <svg class="w-2 ml-10 pt-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
 <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
 </svg>
 
 </button></RouterLink>
-<router-link :to="{ name: 'ShowTask', params: { id: user.id } }"><svg class="w-12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+<router-link :to="{ name: 'ShowTask', params: { id: user.id },props:{fname:user.name} }"><svg class="w-12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
   <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
 </svg>
 {{ user.fname }}</router-link>

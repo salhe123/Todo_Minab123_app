@@ -1,33 +1,32 @@
 <template>
   <div>
-    <h1 class="stroke-zinc-600 text-black ml-5 text-lg">User's Todo List</h1>
-    <ul class="ml-5 pt-5" v-if="selectedUser && selectedUser.todos">
-      <li v-for="todo in selectedUser.todos" :key="todo.id">
-        <h2>{{ todo.title }}</h2>
-        <p>{{ todo.description }}</p>
-        <p>Status: {{ todo.completed ? 'Completed' : 'Incomplete' }}</p>
-      </li>
-    </ul>
-    <div v-else>
-      <p>No user selected or user has no todos.</p>
+    <h1 class="stroke-zinc-600 text-black ml-5 text-lg">User Todos</h1>
+    <div v-if="result && result.user">
+      <h2>{{ fname }}</h2>
+      <ul>
+        <li v-for="todo in result.user.todos" :key="todo.id">
+          <h3>{{ todo.title }}</h3>
+          <p>{{ todo.description }}</p>
+          <p>{{ todo.completed ? 'Completed' : 'Not Completed' }}</p>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script setup>
 import { useQuery } from '@vue/apollo-composable';
-import { computed } from 'vue';
 import { gql } from 'graphql-tag';
-import { useRouter, useRoute } from 'vue-router';
+import { computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const userId = parseInt(route.params.id);
+const fname = route.props.fname;
 
-const { result } = useQuery(gql`
-  query GetUserTodos($userId: Int!) {
-    user(id: $userId) {
+const { result, refetch } = useQuery(gql`
+  query GetUserTodos($id: Int!) {
+    user(id: $id) {
       id
-      fname
       todos {
         id
         title
@@ -37,9 +36,14 @@ const { result } = useQuery(gql`
     }
   }
 `, {
-  userId: computed(() => userId.value), // Use userId.value to access the reactive value
+  variables() {
+    return {
+      id: computed(() => parseInt(route.params.id)),
+    };
+  },
 });
 
-const selectedUser = computed(() => result.value?.user);
-
+onMounted(() => {
+  refetch();
+});
 </script>

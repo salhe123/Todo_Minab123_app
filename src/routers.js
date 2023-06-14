@@ -10,23 +10,23 @@ const routes = [
       name: 'UserList',
       component: UserList,
     },
-        {
+       {
           path: '/AddUser',
           name: 'AddUser',
           component: AddUser
         },
-      {
-        path: '/ShowTask/:id',
-        name: 'ShowTask',
-        component: ShowTask,
-        props: true
-      },
+        {
+          path: '/task/:id',
+          name: 'ShowTask',
+          component: ShowTask,
+          props: true
+        },
+        
       {
         path:'/EditUser/:id',
         name:'EditUser',
         component:EditUser
       }
-
       
     
    
