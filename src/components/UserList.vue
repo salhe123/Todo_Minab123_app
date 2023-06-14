@@ -11,11 +11,11 @@
     <h1 class="stroke-zinc-600 text-black ml-5 text-lg">Users</h1>
     <ul class="grid grid-cols-3 gap-1">
       <li class="ml-5 pt-5" v-for="user in result && result.users" :key="user.id"> 
-          <button @click="handleDelete(user.id)"> <svg class="w-2 ml-10 pt-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+    <RouterLink :to="{name:'EditUser',params:{id:user.id}}"><button @click="handleEdit(user.id)"> <svg class="w-2 ml-10 pt-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
 <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
 </svg>
 
-</button>
+</button></RouterLink>
 <router-link :to="{ name: 'ShowTask', params: { id: user.id } }"><svg class="w-12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
   <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
 </svg>
@@ -43,11 +43,18 @@ const { result, refetch } = useQuery(gql`
 `);
 
 const DELETE_USER = gql`
-  mutation DeleteUser($userId: Int!) {
-    delete_users_by_pk(id: $userId) {
-      id
-    }
+mutation deleteUser($userId: Int!) {
+  delete_todo(where: { user_id: { _eq: $userId } }) {
+    affected_rows
   }
+  delete_users_by_pk(id: $userId) {
+    id
+    fname
+    email
+    created_at
+  }
+}
+
 `;
 
 const { mutate: deleteUser } = useMutation(DELETE_USER, {
@@ -63,32 +70,62 @@ const { mutate: deleteUser } = useMutation(DELETE_USER, {
 });
 
 // Function to handle the delete operation
+// Function to handle the delete operation
 const handleDelete = async (userId) => {
   try {
+    // Show confirmation dialog
+    const confirmed = window.confirm('Are you sure you want to delete this user?');
+    if (!confirmed) {
+      return;
+    }
+
     // Delete todos associated with the user
     await deleteTodosByUserId(userId);
 
     // Delete the user
-    await deleteUser({ userId });
+    const { data } = await deleteUser({ userId });
 
-    console.log('User deleted:', userId);
+    console.log('User deleted:', data.delete_users_by_pk.id);
     refetch();
   } catch (error) {
     console.error('Error deleting user:', error);
   }
 };
-
-const deleteTodosByUserId = async (userId) => {
-  const DELETE_TODOS_BY_USER_ID = gql`
-    mutation DeleteTodosByUserId($userId: Int!) {
-      delete_todo(where: { user_id: { _eq: $userId } }) {
-        affected_rows
-      }
+// Define the GraphQL mutation for updating a user
+const UPDATE_USER = gql`
+  mutation updateUser($userId: Int!, $fname: String, $email: String, $created_at: timestamptz) {
+    update_users_by_pk(pk_columns: { id: $userId }, _set: { fname: $fname, email: $email, created_at: $created_at }) {
+      id
+      fname
+      email
+      created_at
     }
-  `;
+  }
+`;
 
-  const { mutate } = useMutation(DELETE_TODOS_BY_USER_ID);
-  await mutate({ userId });
+// Use the useMutation hook to execute the updateUser mutation
+const { mutate: updateUser } = useMutation(UPDATE_USER);
+
+// Function to handle the edit operation
+const handleEdit = async (user) => {
+  try {
+    const confirmed = window.confirm('Are you sure you want to edit this user?');
+    if (!confirmed) {
+      return;
+    }
+    // Perform the update by calling the updateUser mutation
+    await updateUser({
+      userId: user.id,
+      fname: user.fname, // New first name
+      email: user.email, // New email
+      created_at: user.created_at // New created_at value
+    });
+
+    console.log('User updated:', user.id);
+    refetch();
+  } catch (error) {
+    console.error('Error updating user:', error);
+  }
 };
 
 
