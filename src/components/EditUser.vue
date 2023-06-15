@@ -1,4 +1,5 @@
 <template>
+  <body class="bg-neutral-400">
     <div>
       <h1 class="bg-neutral-400">Edit User</h1>
       <form @submit.prevent="handleEdit">
@@ -14,6 +15,7 @@
         <button type="submit">Save Changes</button>
       </form>
     </div>
+  </body>
   </template>
   
   <script>

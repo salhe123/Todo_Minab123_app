@@ -1,17 +1,21 @@
 <template>
-  <div>
-    <h2>Add User</h2>
-    <form @submit="submitForm" class="">
-      <div>
-        <label for="fname">First Name:</label>
-        <input type="text" id="fname" v-model="firstName" />
+  <div class="bg-neutral-400">
+    <div class="hover:bg-neutral-400 text-red-600 font-bold py-2 px-4 rounded ml-5 pt-3">
+      <router-link :to="{ name: 'UserList' }">Home</router-link>
+    </div>
+  </div>
+  <div class="bg-neutral-400 text-center">
+    <h1 class="pb-36">Add User</h1>
+    <form @submit="submitForm" class="inline-block rounded-lg bg-white p-4">
+      <div class="mb-4">
+        <input class="bg-red-200 rounded-lg px-4 py-2 w-full" type="text" id="fname" placeholder="Firstname" v-model="firstName" />
       </div>
-      <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" v-model="email" />
+      <div class="mb-4">
+        <input class="bg-red-200 rounded-lg px-4 py-2 w-full" type="email" id="email" placeholder="Email" v-model="email" />
       </div>
-      <button type="submit">Add User</button>
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">Add User</button>
     </form>
+    <div v-if="success" class="text-green-500 mt-4">User added successfully</div>
   </div>
 </template>
 
@@ -20,33 +24,42 @@ import { ref } from 'vue';
 import { useMutation } from '@vue/apollo-composable';
 import { gql } from 'graphql-tag';
 
-const ADD_USER = gql`
-  mutation AddUser($fname: String!, $email: String!) {
-    insert_users_one(object: { fname: $fname, email: $email }) {
-      id
-      fname
-      email
-    }
-  }
-`;
-
 const firstName = ref('');
 const email = ref('');
+const success = ref(false);
 
-const { mutate: addUser } = useMutation(ADD_USER);
+const { mutate } = useMutation(gql`
+  mutation InsertUsers($id: Int, $email: String, $fname: String) {
+    insert_users(objects: { id: $id, email: $email, fname: $fname }) {
+      affected_rows
+    }
+  }
+`);
 
 const submitForm = async (event) => {
   event.preventDefault();
 
-  try {
-    const { data } = await addUser({ fname: firstName.value, email: email.value });
-    console.log('User added successfully:', data.insert_users_one);
-    firstName.value = ''; // Reset the form field
-    email.value = ''; // Reset the form field
-    // Emit an event to notify the userlist.vue component about the new user added
-    emit('userAdded', data.insert_users_one);
-  } catch (error) {
-    console.error('Error adding user:', error);
+  if (firstName.value && email.value) {
+    const variables = {
+      email: email.value,
+      fname: firstName.value,
+    };
+
+    try {
+      const response = await mutate(variables);
+
+      if (response.data.insert_users.affected_rows > 0) {
+        // User added successfully
+        success.value = true;
+        console.log('User added successfully');
+      } else {
+        console.error('Failed to add user');
+      }
+    } catch (error) {
+      console.error('Error adding user:', error);
+    }
+  } else {
+    console.warn('Please fill in all fields');
   }
 };
 </script>

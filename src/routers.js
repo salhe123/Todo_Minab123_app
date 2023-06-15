@@ -16,7 +16,7 @@ const routes = [
           component: AddUser
         },
         {
-          path: '/task/:id',
+          path: '/ShowTask/:id',
           name: 'ShowTask',
           component: ShowTask,
           props: true

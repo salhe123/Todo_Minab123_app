@@ -1,7 +1,6 @@
 <template>
   <div>
-    <UserList />
-    
+    <RouterView></RouterView>
   </div>
   <footer>
     <div class="bg-neutral-400">
@@ -17,11 +16,5 @@
   </footer>
 </template>
 
-<script>
-import UserList from './components/UserList.vue';
-export default {
-  components: {
-    UserList,
-  },
-};
+<script setup>
 </script>
