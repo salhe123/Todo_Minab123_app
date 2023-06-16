@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build": "npm run build && netlify-build"
   },
   "dependencies": {
     "@apollo/client": "^3.7.15",
