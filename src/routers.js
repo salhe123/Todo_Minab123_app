@@ -1,6 +1,6 @@
-import { createRouter,createWebHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import UserList from './components/UserList.vue';
-import ShowTask from './components/ShowTask.vue';
+import ShowTask from '@/components/ShowTask.vue';
 import AddUser from './components/AddUser.vue';  
 import EditUser from './components/EditUser.vue'   
 
