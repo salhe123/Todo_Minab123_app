@@ -4,9 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:vite && npm run build:netlify",
-    "build:vite": "vite build",
-    "build:netlify": "netlify-build",
+    "build": "vite build && netlify build",
     "preview": "vite preview"
   },
   "dependencies": {
