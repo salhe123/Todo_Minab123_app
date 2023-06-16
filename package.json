@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "build": "npm run build && netlify-build"
+    "build": "npm run build:vite && npm run build:netlify",
+    "build:vite": "vite build",
+    "build:netlify": "netlify-build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@apollo/client": "^3.7.15",
