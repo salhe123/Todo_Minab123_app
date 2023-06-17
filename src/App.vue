@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-neutral-400">
     <RouterView></RouterView>
   </div>
   <footer>
